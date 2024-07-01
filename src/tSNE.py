@@ -1,8 +1,8 @@
-"""Time-series PCA visualization
+"""Time-series t-SNE visualization
 
 -----------------------------
 
-PCA.py
+tSNE.py
 
 """
 
@@ -12,6 +12,7 @@ from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 import numpy as np
 from lib.load_data import load_data
+import argparse
 
 def visualizeTSNE(ori_data, generated_data, out_fig_name:str="default"):
     """Using PCA for generated and original data visualization.
@@ -70,9 +71,14 @@ def visualizeTSNE(ori_data, generated_data, out_fig_name:str="default"):
     plt.show()    
 
 if __name__=="__main__":
+    # Define parser
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-d", "--ori_data", type=str)
+    parser.add_argument("-g", "--gen_data", type=str)
+    args = parser.parse_args()
     # Define parameters
-    ori_data_path = "src/data/original/stock_data.csv"
-    gen_data_path = "src/data/generated/stock-data_TimeGAN_tf1_1000e.npy"
+    ori_data_path = args.ori_data #"src/data/original/stock_data.csv"
+    gen_data_path = args.gen_data #"src/data/generated/generated_data_1000e.npy"
     seq_len = 24
     # Load original data
     if ori_data_path[-3:] == 'csv':
@@ -86,7 +92,8 @@ if __name__=="__main__":
     else:
         gen_data = np.load(gen_data_path)
     print("Generated data loaded correctly: ", gen_data.shape)
-    # Visualize PCA
+
+    # Visualize t-SNE
     visualizeTSNE(ori_data, gen_data, out_fig_name="tSNE")
     print("Image saved in 'out/figures'")
     
