@@ -11,7 +11,7 @@ Code adaptation: Manuel Sánchez Laguardia
 
 -----------------------------
 
-predictive_metrics.py
+discriminative.py
 
 Note: This code was migrated from TF1 to Tensorflow 2
 
@@ -158,13 +158,13 @@ if __name__ == "__main__":
         ori_data = np.asarray(load_data(data_path=ori_data_path, seq_len=seq_len, is_stock_energy=True))
     else:
         ori_data = np.load(ori_data_path)
-    print("Original data loaded correctly: ", ori_data.shape)
+    print("Load original dataset ok: ", ori_data.shape)
     # Load generated data
     if gen_data_path[-3:] == 'csv':
         gen_data = np.asarray(load_data(data_path=gen_data_path, seq_len=seq_len, is_stock_energy=True))
     else:
         gen_data = np.load(gen_data_path)
-    print("Generated data loaded correctly: ", gen_data.shape)
+    print("Load generated datase ok:", gen_data.shape)
 
     # Discriminative score calculation
     metric_iteration = args.iterations
