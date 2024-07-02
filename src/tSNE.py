@@ -75,6 +75,8 @@ if __name__=="__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "--ori_data", type=str)
     parser.add_argument("-g", "--gen_data", type=str)
+    parser.add_argument("--stock_energy", type=bool, default=True)
+    parser.add_argument("-o", "--out", type=str, default="tSNE")
     args = parser.parse_args()
     # Define parameters
     ori_data_path = args.ori_data #"src/data/original/stock_data.csv"
@@ -82,18 +84,18 @@ if __name__=="__main__":
     seq_len = 24
     # Load original data
     if ori_data_path[-3:] == 'csv':
-        ori_data = np.asarray(load_data(data_path=ori_data_path, seq_len=seq_len, is_stock_energy=True))
+        ori_data = np.asarray(load_data(data_path=ori_data_path, seq_len=seq_len, is_stock_energy=args.stock_energy))
     else:
         ori_data = np.load(ori_data_path)
     print("Original data loaded correctly: ", ori_data.shape)
     # Load generated data
     if gen_data_path[-3:] == 'csv':
-        gen_data = np.asarray(load_data(data_path=gen_data_path, seq_len=seq_len, is_stock_energy=True))
+        gen_data = np.asarray(load_data(data_path=gen_data_path, seq_len=seq_len, is_stock_energy=False))
     else:
         gen_data = np.load(gen_data_path)
     print("Generated data loaded correctly: ", gen_data.shape)
 
     # Visualize t-SNE
-    visualizeTSNE(ori_data, gen_data, out_fig_name="tSNE")
-    print("Image saved in 'out/figures'")
+    visualizeTSNE(ori_data, gen_data, out_fig_name=args.out)
+    print(f"Image saved as 'out/figures/{args.out}.png'")
     
