@@ -52,7 +52,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "--ori_data", type=str)
     parser.add_argument("-g", "--gen_data", type=str)
-    parser.add_argument("--stock_energy", type=bool, default=True)
+    parser.add_argument("--stock_energy", type=bool, default=False)
     parser.add_argument("-s", "--samples_to_plot", type=int, default=None, help="Defines how many samples to plot from the beginning")
     parser.add_argument("-o", "--out", type=str, default="plot")
     args = parser.parse_args()

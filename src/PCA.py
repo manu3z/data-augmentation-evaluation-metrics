@@ -72,7 +72,7 @@ if __name__=="__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "--ori_data", type=str)
     parser.add_argument("-g", "--gen_data", type=str)
-    parser.add_argument("--stock_energy", type=bool, default=True)
+    parser.add_argument("--stock_energy", type=bool, default=False)
     parser.add_argument("-o", "--out", type=str, default="PCA")
     args = parser.parse_args()
     # Define parameters

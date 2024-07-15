@@ -26,6 +26,9 @@ def load_data(data_path:str, seq_len=None, is_stock_energy:bool=False):
     # Flip the data to make chronological data (ONLY for STOCK and ENERGY datasets)
     if is_stock_energy:
         ori_data = ori_data[::-1]
+    # OR remove first column corresponding to the index in non STOCK datasets
+    else:
+        ori_data = ori_data[:,1:]
 
     if (seq_len != None):
         # Preprocess the dataset
