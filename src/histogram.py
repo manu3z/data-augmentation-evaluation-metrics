@@ -10,7 +10,7 @@ import numpy as np
 import argparse
 from lib.load_data import load_data
 
-def plot_histograms(ori_data, gen_data, out_fig_name:str="default", log:bool=True):
+def plot_histograms(ori_data, gen_data, out_fig_name:str="default", log:bool=True, show:bool=False):
     """
     Args:
         - ori_data: original data
@@ -30,7 +30,7 @@ def plot_histograms(ori_data, gen_data, out_fig_name:str="default", log:bool=Tru
         plt.xlabel('Value')
         plt.ylabel(f'{["log " if log else ""][0]}density')
         plt.legend()
-        plt.suptitle(f"{["Logarithmic " if log else ""][0]}Histograms of Original Data and Generated Data", y=0.98, weight='normal', size='x-large')
+        plt.suptitle(f'{["Logarithmic " if log else ""][0]}Histograms of Original Data and Generated Data', y=0.98, weight='normal', size='x-large')
     else:
         fig, axs = plt.subplots(num_subplots, 1, figsize=(15,3*num_subplots))
         for i in range(num_subplots):
@@ -39,9 +39,10 @@ def plot_histograms(ori_data, gen_data, out_fig_name:str="default", log:bool=Tru
             axs[i].legend()
             axs[i].set_xlabel('Value')
             axs[i].set_ylabel(f'{["log " if log else ""][0]}density')
-            plt.suptitle(f"{["Logarithmic " if log else ""][0]}Histograms of Original Data and Generated Data", y=0.95, weight='normal', size='x-large')
+            plt.suptitle(f'{["Logarithmic " if log else ""][0]}Histograms of Original Data and Generated Data', y=0.95, weight='normal', size='x-large')
     plt.savefig(f"out/figures/{out_fig_name}.png")
-    plt.show()
+    if show:
+        plt.show()
 
 if __name__ == "__main__":
         # Define parser
@@ -51,6 +52,7 @@ if __name__ == "__main__":
     parser.add_argument("-l", "--log", action='store_true')
     parser.add_argument("--stock_energy", type=bool, default=False)
     parser.add_argument("-o", "--out", type=str, default="histogram")
+    parser.add_argument("--show", action="store_true", default=False)
     args = parser.parse_args()
     # Define parameters
     ori_data_path = args.ori_data #"src/data/original/stock_data.csv"
@@ -74,5 +76,5 @@ if __name__ == "__main__":
 
     # Visualize t-SNE
     print(f"Plotting Histograms with log = {args.log} ...")
-    plot_histograms(ori_data, gen_data, out_fig_name=args.out, log=args.log)
+    plot_histograms(ori_data, gen_data, out_fig_name=args.out, log=args.log, show=args.show)
     print(f"Image saved as 'out/figures/{args.out}.png'")
