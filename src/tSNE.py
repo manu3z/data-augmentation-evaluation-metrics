@@ -14,7 +14,7 @@ import numpy as np
 from lib.load_data import load_data
 import argparse
 
-def visualizeTSNE(ori_data, generated_data, out_fig_name:str="default"):
+def visualizeTSNE(ori_data, generated_data, out_fig_name:str="default", show:bool=False):
     """Using PCA for generated and original data visualization.
     
     Args:
@@ -68,7 +68,8 @@ def visualizeTSNE(ori_data, generated_data, out_fig_name:str="default"):
     plt.xlabel('x-tsne')
     plt.ylabel('y_tsne')
     plt.savefig(f"out/figures/{out_fig_name}.png")
-    plt.show()    
+    if show:
+        plt.show()   
 
 if __name__=="__main__":
     # Define parser
@@ -77,6 +78,7 @@ if __name__=="__main__":
     parser.add_argument("-g", "--gen_data", type=str)
     parser.add_argument("--stock_energy", type=bool, default=False)
     parser.add_argument("-o", "--out", type=str, default="tSNE")
+    parser.add_argument("--show", action="store_true", default=False)
     args = parser.parse_args()
     # Define parameters
     ori_data_path = args.ori_data #"src/data/original/stock_data.csv"
@@ -94,8 +96,14 @@ if __name__=="__main__":
     else:
         gen_data = np.load(gen_data_path)
     print("Generated data loaded correctly: ", gen_data.shape)
-
+    # Change sizes
+    if len(ori_data) > len(gen_data):
+        ori_data = ori_data[:len(gen_data)]
+        print("New generated data shape: ", gen_data.shape)
+    elif len(ori_data) < len(gen_data):
+        ori_data = ori_data[:len(gen_data)]
+        print("New original data shape: ", ori_data.shape)
     # Visualize t-SNE
-    visualizeTSNE(ori_data, gen_data, out_fig_name=args.out)
+    visualizeTSNE(ori_data, gen_data, out_fig_name=args.out, show=args.show)
     print(f"Image saved as 'out/figures/{args.out}.png'")
     
