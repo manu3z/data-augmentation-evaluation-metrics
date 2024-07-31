@@ -149,14 +149,20 @@ if __name__ == "__main__":
         ori_data = np.asarray(load_data(data_path=ori_data_path, seq_len=seq_len, is_stock_energy=args.stock_energy))
     else:
         ori_data = np.load(ori_data_path)
-    print("Load original dataset ok: ", ori_data.shape)
+    print("Original data loaded correctly: ", ori_data.shape)
     # Load generated data
     if gen_data_path[-3:] == 'csv':
         gen_data = np.asarray(load_data(data_path=gen_data_path, seq_len=seq_len, is_stock_energy=False))
     else:
         gen_data = np.load(gen_data_path)
-    print("Load generated dataset ok:", gen_data.shape)
-
+    print("Generated data loaded correctly: ", gen_data.shape)
+    # Change sizes
+    if len(ori_data) < len(gen_data):
+        gen_data = gen_data[:len(ori_data)]
+        print("New generated data shape: ", gen_data.shape)
+    elif len(ori_data) > len(gen_data):
+        ori_data = ori_data[:len(gen_data)]
+        print("New original data shape: ", ori_data.shape)
     # Predictive score calculation
     metric_iteration = args.iterations
     predictive_score = list()
