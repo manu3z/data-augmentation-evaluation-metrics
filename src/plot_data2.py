@@ -2,7 +2,7 @@
 
 -----------------------------
 
-plot_data.py
+plot_data2.py
 
 """
 import matplotlib.pyplot as plt
@@ -36,8 +36,8 @@ def plot_data_alternative(ori_data, gen_data, out_fig_name:str="default", plotva
         plt.legend()
         plt.suptitle("Original Data and Generated Data Plot", y=0.98, weight='normal', size='x-large')
     else:
-        colors_list = ['tab:blue','tab:orange','tab:green','tab:red','tab:purple','tab:brown', ]
-        colors_list_dark = ['darkblue','sienna','darkgreen','darkred','purple','saddlebrown', ]
+        colors_list = ['tab:blue','tab:orange','tab:green','tab:red','tab:purple','tab:brown','tab:pink','tab:gray','tab:olive','tab:cyan','dodgerblue','salmon','goldenrod' ]
+        colors_list_dark = ['darkblue','sienna','darkgreen','darkred','purple','saddlebrown','deeppink','dimgrey','olive','darkturquoise','steelblue','orangered','darkgoldenrod' ]
 
         fig = plt.figure(constrained_layout=True, figsize=(10,3*num_subplots))
         subfigs = fig.subfigures(num_subplots, 1)
@@ -71,13 +71,16 @@ if __name__ == "__main__":
     parser.add_argument("-o", "--out", type=str, default="plot2")
     parser.add_argument("--show", action="store_true", default=False)
     args = parser.parse_args()
+    
     # Define parameters
     ori_data_path = args.ori_data #"src/data/original/stock_data.csv"
     gen_data_path = args.gen_data #"src/data/generated/generated_data_1000e.npy"
-    seq_len = 24
+    seq_len = None
+
     # Load original data
     if ori_data_path[-3:] == 'csv':
         ori_data = np.asarray(load_data(data_path=ori_data_path, seq_len=seq_len, is_stock_energy=args.stock_energy))
+        ori_data = np.expand_dims(ori_data,1)
         print("Original data loaded from .csv: ", ori_data.shape)
     else:
         ori_data = np.load(ori_data_path)
@@ -85,19 +88,22 @@ if __name__ == "__main__":
     # Load generated data
     if gen_data_path[-3:] == 'csv':
         gen_data = np.asarray(load_data(data_path=gen_data_path, seq_len=seq_len, is_stock_energy=False))
+        gen_data = np.expand_dims(gen_data,1)
         print("Generated data loaded from .csv: ", gen_data.shape)
     else:
         gen_data = np.load(gen_data_path)
         print("Generated data loaded from .npy: ", gen_data.shape)
+    # Expand dimensions if necessary
     if ori_data.ndim<3:
-        ori_data = np.expand_dims(ori_data, axis=2)
-        gen_data = np.expand_dims(gen_data, axis=2)
+        ori_data = np.expand_dims(ori_data, axis=1)
+    if gen_data.ndim<3:
+        gen_data = np.expand_dims(gen_data, axis=1)
 
     if args.samples_to_plot != None:
         assert args.samples_to_plot <= ori_data.shape[0], "Samples to plot must be smaller than the total values in ori_data"
         assert args.samples_to_plot <= gen_data.shape[0], "Samples to plot must be smaller than the total values in gen_data"
 
-    # Visualize t-SNE
+    # Visualize plots
     print("Plotting Original and Generated data...")
     plot_data_alternative(ori_data, gen_data, out_fig_name=args.out, plotvals=args.samples_to_plot, show=args.show)
     print(f"Image saved as 'out/figures/{args.out}.png'")
