@@ -21,20 +21,21 @@ def load_data(data_path:str, seq_len=None, is_stock_energy:bool=False):
     Returns:
     - data: preprocessed data.
     """
-    ori_data = np.loadtxt(data_path, delimiter = ",",skiprows = 1)
+    ori_data = np.loadtxt(data_path, delimiter = ";",skiprows = 1)
     
     # Flip the data to make chronological data (ONLY for STOCK and ENERGY datasets)
     if is_stock_energy:
         ori_data = ori_data[::-1]
     # OR remove first column corresponding to the index in non STOCK datasets
     else:
-        ori_data = ori_data[:,1:]
+        # ori_data = ori_data[:,1:]
+        pass
 
     if (seq_len != None):
         # Preprocess the dataset
         temp_data = []    
         # Cut data by sequence length
-        for i in range(0, len(ori_data) - seq_len):
+        for i in range(0, len(ori_data) - seq_len+1):
             _x = ori_data[i:i + seq_len]
             temp_data.append(_x)
             
