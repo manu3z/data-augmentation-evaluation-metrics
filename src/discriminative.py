@@ -149,30 +149,25 @@ if __name__ == "__main__":
     parser.add_argument("-g", "--gen_data", type=str)
     parser.add_argument("-i", "--iterations", type=int, default=5)
     parser.add_argument("--stock_energy", type=bool, default=False)
+    parser.add_argument("--seq_len", type=int, default=24)
     args = parser.parse_args()
     # Define parameters
     ori_data_path = args.ori_data #"src/data/original/stock_data.csv"
     gen_data_path = args.gen_data #"src/data/generated/stock-data_TimeGAN_tf1_1000e.npy"
-    seq_len = 24
+    seq_len = args.seq_len
     # Load original data
     if ori_data_path[-3:] == 'csv':
         ori_data = np.asarray(load_data(data_path=ori_data_path, seq_len=seq_len, is_stock_energy=args.stock_energy))
     else:
         ori_data = np.load(ori_data_path)
-    print("Original data loaded correctly: ", ori_data.shape)
+    print("Load original dataset ok: ", ori_data.shape)
     # Load generated data
     if gen_data_path[-3:] == 'csv':
         gen_data = np.asarray(load_data(data_path=gen_data_path, seq_len=seq_len, is_stock_energy=False))
     else:
         gen_data = np.load(gen_data_path)
-    print("Generated data loaded correctly: ", gen_data.shape)
-    # Change sizes
-    if len(ori_data) < len(gen_data):
-        gen_data = gen_data[:len(ori_data)]
-        print("New generated data shape: ", gen_data.shape)
-    elif len(ori_data) > len(gen_data):
-        ori_data = ori_data[:len(gen_data)]
-        print("New original data shape: ", ori_data.shape)
+    print("Load generated dataset ok:", gen_data.shape)
+
     # Discriminative score calculation
     metric_iteration = args.iterations
     discriminative_score = list()
@@ -181,5 +176,7 @@ if __name__ == "__main__":
         discriminative_score.append(temp_disc)
         # Print dynamic iteration state
         print(f"Iteration {i+1} score: {temp_disc}")
+    ds_mean = np.round(np.mean(discriminative_score), 4)
+    ds_std  = np.round(np.std(discriminative_score), 4)
 
-    print('Discriminative score: ' + str(np.round(np.mean(discriminative_score), 4)))
+    print(f'Discriminative score: {str(ds_mean)} +- {str(ds_std)}')
