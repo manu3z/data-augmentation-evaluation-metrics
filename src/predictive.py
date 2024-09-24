@@ -179,6 +179,8 @@ if __name__ == "__main__":
         temp_pred = predictive_score_metrics(ori_data, gen_data)
         predictive_score.append(temp_pred)
         # Print dynamic iteration state
-        # print(f"Iteration {i+1} score: {temp_pred}")
-        
-    print(f'Predictive score: {str(np.round(np.mean(predictive_score), 4))} +- {str(np.round(np.std(np.asarray(predictive_score)), 4))}')
+        print(f"Iteration {i+1} score: {temp_pred}")
+    ps_mean = np.round(np.mean(predictive_score), 4)
+    ps_std  = np.round(np.std(predictive_score), 4)
+
+    print(f'Discriminative score: {str(ps_mean)} +- {str(ps_std)}')

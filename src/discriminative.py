@@ -172,7 +172,6 @@ if __name__ == "__main__":
     ori_data_path = args.ori_data #"src/data/original/stock_data.csv"
     gen_data_path = args.gen_data #"src/data/generated/stock-data_TimeGAN_tf1_1000e.npy"
     seq_len = args.seq_len
-
     # Load original data
     ori_data = load_data_multiformat(ori_data_path, seq_len, delim=';')
     # Load synthetic data
@@ -190,6 +189,8 @@ if __name__ == "__main__":
         temp_disc = discriminative_score_metrics(ori_data, gen_data)
         discriminative_score.append(temp_disc)
         # Print dynamic iteration state
-        # print(f"Iteration {i+1} score: {temp_disc}")
+        print(f"Iteration {i+1} score: {temp_disc}")
+    ds_mean = np.round(np.mean(discriminative_score), 4)
+    ds_std  = np.round(np.std(discriminative_score), 4)
 
-    print(f'Discriminative score: {str(np.round(np.mean(discriminative_score), 4))} +- {str(np.round(np.std(np.asarray(discriminative_score)), 4))}')
+    print(f'Discriminative score: {str(ds_mean)} +- {str(ds_std)}')

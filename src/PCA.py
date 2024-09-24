@@ -76,14 +76,13 @@ if __name__=="__main__":
     parser.add_argument("--stock_energy", type=bool, default=False)
     parser.add_argument("-o", "--out", type=str, default="PCA")
     parser.add_argument("--show", action="store_true", default=False)
-    parser.add_argument("--seq_len", type=int, default=24)
+    parser.add_argument("--seq_len", type=int, default=24, help="Sequence length (default=24)")
     args = parser.parse_args()
 
     # Define parameters
     ori_data_path = args.ori_data #"src/data/original/stock_data.csv"
     gen_data_path = args.gen_data #"src/data/generated/generated_data_1000e.npy"
     seq_len = args.seq_len
-
     # Load original data
     ori_data = load_data_multiformat(ori_data_path, seq_len, delim=';')
     # Load synthetic data
