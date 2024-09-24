@@ -23,10 +23,26 @@ import tensorflow as tf
 import numpy as np
 from sklearn.metrics import mean_absolute_error
 from lib.utils import extract_time
-from lib.load_data import load_data
+from lib.load_data import load_data_multiformat
 import argparse
+from tqdm import tqdm
 
 tf.compat.v1.disable_eager_execution()
+
+# Limit GPU Memory Growth
+gpus = tf.config.list_physical_devices('GPU')
+print("Num GPUs Available: ", len(gpus))
+if gpus:
+  try:
+    # Currently, memory growth needs to be the same across GPUs
+    for gpu in gpus:
+      tf.config.experimental.set_memory_growth(gpu, True)
+    logical_gpus = tf.config.list_logical_devices('GPU')
+    print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
+  except RuntimeError as e:
+    # Memory growth must be set before GPUs have been initialized
+    print(e)
+
 
 def predictive_score_metrics (ori_data, generated_data):
     """Report the performance of Post-hoc RNN one-step ahead prediction.
@@ -71,7 +87,7 @@ def predictive_score_metrics (ori_data, generated_data):
           - y_hat: prediction
           - p_vars: predictor variables
         """
-        class Mask(tf.keras.Layer):
+        class Mask(tf.keras.layers.Layer):
             def call(self, t):
                 return tf.expand_dims(tf.sequence_mask(t, dtype=tf.float32), axis=-1)
         
@@ -137,39 +153,32 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "--ori_data", type=str)
     parser.add_argument("-g", "--gen_data", type=str)
-    parser.add_argument("-i", "--iterations", type=int, default=5)
+    parser.add_argument("-i", "--iterations", type=int, default=10)
     parser.add_argument("--stock_energy", type=bool, default=False)
+    parser.add_argument("--seq_len", type=int, default=24)
     args = parser.parse_args()
+
     # Define parameters
     ori_data_path = args.ori_data #"src/data/original/stock_data.csv"
     gen_data_path = args.gen_data #"src/data/generated/stock-data_TimeGAN_tf1_1000e.npy"
-    seq_len = 24
+    seq_len = args.seq_len
+
     # Load original data
-    if ori_data_path[-3:] == 'csv':
-        ori_data = np.asarray(load_data(data_path=ori_data_path, seq_len=seq_len, is_stock_energy=args.stock_energy))
-    else:
-        ori_data = np.load(ori_data_path)
-    print("Original data loaded correctly: ", ori_data.shape)
-    # Load generated data
-    if gen_data_path[-3:] == 'csv':
-        gen_data = np.asarray(load_data(data_path=gen_data_path, seq_len=seq_len, is_stock_energy=False))
-    else:
-        gen_data = np.load(gen_data_path)
-    print("Generated data loaded correctly: ", gen_data.shape)
+    ori_data = load_data_multiformat(ori_data_path, seq_len, delim=';')
+    # Load synthetic data
+    gen_data = load_data_multiformat(gen_data_path, seq_len)
+
     # Change sizes
-    if len(ori_data) < len(gen_data):
-        gen_data = gen_data[:len(ori_data)]
-        print("New generated data shape: ", gen_data.shape)
-    elif len(ori_data) > len(gen_data):
-        ori_data = ori_data[:len(gen_data)]
-        print("New original data shape: ", ori_data.shape)
+    stop = min(len(ori_data), len(gen_data))
+    ori_data = ori_data[:stop]
+    gen_data = gen_data[:stop]
     # Predictive score calculation
     metric_iteration = args.iterations
     predictive_score = list()
-    for i in range(metric_iteration):
+    for i in tqdm(range(metric_iteration)):
         temp_pred = predictive_score_metrics(ori_data, gen_data)
         predictive_score.append(temp_pred)
         # Print dynamic iteration state
-        print(f"Iteration {i+1} score: {temp_pred}")
+        # print(f"Iteration {i+1} score: {temp_pred}")
         
-    print('Predictive score: ' + str(np.round(np.mean(predictive_score), 4)))
+    print(f'Predictive score: {str(np.round(np.mean(predictive_score), 4))} +- {str(np.round(np.std(np.asarray(predictive_score)), 4))}')

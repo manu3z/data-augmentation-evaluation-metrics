@@ -11,7 +11,7 @@ from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 import numpy as np
-from lib.load_data import load_data
+from lib.load_data import load_data_multiformat
 import argparse
 
 def visualizeTSNE(ori_data, generated_data, out_fig_name:str="default", show:bool=False):
@@ -79,31 +79,26 @@ if __name__=="__main__":
     parser.add_argument("--stock_energy", type=bool, default=False)
     parser.add_argument("-o", "--out", type=str, default="tSNE")
     parser.add_argument("--show", action="store_true", default=False)
+    parser.add_argument("--seq_len", type=int, default=24)
     args = parser.parse_args()
+
     # Define parameters
     ori_data_path = args.ori_data #"src/data/original/stock_data.csv"
     gen_data_path = args.gen_data #"src/data/generated/generated_data_1000e.npy"
-    seq_len = 24
+    seq_len = args.seq_len
+
     # Load original data
-    if ori_data_path[-3:] == 'csv':
-        ori_data = np.asarray(load_data(data_path=ori_data_path, seq_len=seq_len, is_stock_energy=args.stock_energy))
-    else:
-        ori_data = np.load(ori_data_path)
-    print("Original data loaded correctly: ", ori_data.shape)
-    # Load generated data
-    if gen_data_path[-3:] == 'csv':
-        gen_data = np.asarray(load_data(data_path=gen_data_path, seq_len=seq_len, is_stock_energy=False))
-    else:
-        gen_data = np.load(gen_data_path)
-    print("Generated data loaded correctly: ", gen_data.shape)
+    ori_data = load_data_multiformat(ori_data_path, seq_len, delim=';')
+    # Load synthetic data
+    gen_data = load_data_multiformat(gen_data_path, seq_len)
+
     # Change sizes
-    if len(ori_data) > len(gen_data):
-        ori_data = ori_data[:len(gen_data)]
-        print("New generated data shape: ", gen_data.shape)
-    elif len(ori_data) < len(gen_data):
-        ori_data = ori_data[:len(gen_data)]
-        print("New original data shape: ", ori_data.shape)
+    stop = min(len(ori_data), len(gen_data))
+    ori_data = ori_data[:stop]
+    gen_data = gen_data[:stop]
+
     # Visualize t-SNE
+    print("Plot t-SNE ...")
     visualizeTSNE(ori_data, gen_data, out_fig_name=args.out, show=args.show)
-    print(f"Image saved as 'out/figures/{args.out}.png'")
+    print(f"Image saved as 'out/figures/{args.out}.png' \n-----")
     

@@ -8,7 +8,7 @@ histogram.py
 import matplotlib.pyplot as plt
 import numpy as np
 import argparse
-from lib.load_data import load_data
+from lib.load_data import load_data_multiformat
 
 def plot_histograms(ori_data, gen_data, out_fig_name:str="default", log:bool=True, show:bool=False):
     """
@@ -53,28 +53,20 @@ if __name__ == "__main__":
     parser.add_argument("--stock_energy", type=bool, default=False)
     parser.add_argument("-o", "--out", type=str, default="histogram")
     parser.add_argument("--show", action="store_true", default=False)
+    parser.add_argument("--seq_len", type=int, default=24)
     args = parser.parse_args()
+
     # Define parameters
     ori_data_path = args.ori_data #"src/data/original/stock_data.csv"
     gen_data_path = args.gen_data #"src/data/generated/generated_data_1000e.npy"
-    seq_len = 24
-    # Load original data
-    if ori_data_path[-3:] == 'csv':
-        ori_data = np.asarray(load_data(data_path=ori_data_path, seq_len=seq_len, is_stock_energy=args.stock_energy))
-    else:
-        ori_data = np.load(ori_data_path)
-    print("Original data loaded correctly: ", ori_data.shape)
-    # Load generated data
-    if gen_data_path[-3:] == 'csv':
-        gen_data = np.asarray(load_data(data_path=gen_data_path, seq_len=seq_len, is_stock_energy=False))
-    else:
-        gen_data = np.load(gen_data_path)
-    print("Generated data loaded correctly: ", gen_data.shape)
-    if ori_data.ndim<3:
-        ori_data = np.expand_dims(ori_data, axis=2)
-        gen_data = np.expand_dims(gen_data, axis=2)
+    seq_len = args.seq_len
 
-    # Visualize t-SNE
-    print(f"Plotting Histograms with log = {args.log} ...")
+    # Load original data
+    ori_data = load_data_multiformat(ori_data_path, seq_len, delim=';')
+    # Load synthetic data
+    gen_data = load_data_multiformat(gen_data_path, seq_len)
+
+    # Visualize histograms
+    print(f"Plot histograms (with log = {args.log}) ...")
     plot_histograms(ori_data, gen_data, out_fig_name=args.out, log=args.log, show=args.show)
-    print(f"Image saved as 'out/figures/{args.out}.png'")
+    print(f"Image saved as 'out/figures/{args.out}.png' \n-----")
