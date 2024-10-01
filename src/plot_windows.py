@@ -30,24 +30,31 @@ def plot_windows(ori_data, gen_data, out_fig_name:str="default", windows:int=3, 
     time = list(range(1,25))
 
     #Plotting some generated samples.
-    fig = plt.figure(constrained_layout=True, figsize=(ncols*2,nrows*1.5))
+    fig = plt.figure(constrained_layout=True, figsize=(ncols*2,nrows*2))
     # fig.tight_layout()
     subfigs = fig.subfigures(nseries, 1, hspace=0.25)
-    fig.suptitle("Original Data and Generated Data Windows")
+    fig.suptitle("Windows of real and synthetic data", fontsize='xx-large')
 
     for outerind, subfig in enumerate(subfigs.flat):
-        axs = subfig.subplots(1, ncols)
-        subfig.suptitle(f'TS{outerind+1}')
+        # axs = subfig.subplots(1, ncols)
+        subfig.suptitle(f'{"-----"*15} TS{outerind+1} {"-----"*15}', fontsize='x-large')
         # plt.subplots_adjust(wspace=0.5)  # Increase width space
+        subsubfigs = subfig.subfigures(1,2)#,hspace=0.25)
+        
+        for innerind, subsubfig in enumerate(subsubfigs.flat):
+            axs = subsubfig.subplots(1, ncols//2)
+            subsubfig.suptitle('Real' if innerind==0 else "Synthetic")
 
-        for col in range(ncols):
-            obs = np.random.randint(len(ori_data))
-            axs[col].plot(ori_data[obs, :, outerind%12], label='Real')
-            axs[col].plot(gen_data[obs, :, outerind%12], label='Synth')
-            # axs[col].legend(loc='upper right')
-            axs[col].set_xticks([])
-            axs[col].axis('off')  # Hide axis
-    
+            for col in range(ncols//2):
+                obs = np.random.randint(len(ori_data))
+                if innerind == 0:
+                    axs[col].plot(ori_data[obs, :, outerind%12], label='Real', c='tab:blue')
+                else:
+                    axs[col].plot(gen_data[obs, :, outerind%12], label='Synth', c='tab:orange')
+                # axs[col].legend(loc='upper right')
+                axs[col].set_xticks([])
+                axs[col].axis('off')  # Hide axis
+
     # if num_subplots == 1:
     #     plt.figure(figsize=(15,3.5))
     #     plt.plot(np.linspace(0,ori_data_len,ori_data_len), ori_data[:ori_data_len,-1,:], label=f'Original Data')
