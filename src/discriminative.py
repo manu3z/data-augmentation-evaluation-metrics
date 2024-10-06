@@ -173,7 +173,7 @@ if __name__ == "__main__":
     gen_data_path = args.gen_data #"src/data/generated/stock-data_TimeGAN_tf1_1000e.npy"
     seq_len = args.seq_len
     # Load original data
-    ori_data = load_data_multiformat(ori_data_path, seq_len, delim=';')
+    ori_data = load_data_multiformat(ori_data_path, seq_len)
     # Load synthetic data
     gen_data = load_data_multiformat(gen_data_path, seq_len)
 
