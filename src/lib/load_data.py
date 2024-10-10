@@ -54,7 +54,7 @@ def load_data(data_path:str, seq_len=None, is_stock_energy:bool=False):
 def load_data_multiformat(
         ori_data_path:str, 
         seq_len:int,
-        delim:str=';',
+        delim:str=',',
         stock_energy:bool=False,
         verbose:bool=True,
 ):
@@ -62,7 +62,7 @@ def load_data_multiformat(
     # Load original data
     # From .csv
     if ori_data_path[-3:] == 'csv':
-        ori_data = np.loadtxt(ori_data_path, delimiter = delim, skiprows = 1)
+        ori_data = np.loadtxt(ori_data_path, delimiter = delim, skiprows=1)#, usecols=[1,2,3]) # Para mis sparse datasets (delim=';')s
         if stock_energy:
             ori_data = ori_data[::-1] # Flip dataset
         if (seq_len != None):
