@@ -62,7 +62,7 @@ def load_data_multiformat(
     # Load original data
     # From .csv
     if ori_data_path[-3:] == 'csv':
-        ori_data = np.loadtxt(ori_data_path, delimiter = delim, skiprows=1)#, usecols=[1,2,3]) # Para mis sparse datasets (delim=';')s
+        ori_data = np.loadtxt(ori_data_path, delimiter = delim, skiprows=1)#, usecols=[1,2,3])
         if stock_energy:
             ori_data = ori_data[::-1] # Flip dataset
         if (seq_len != None):
